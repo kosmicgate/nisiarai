@@ -31,7 +31,8 @@ function draw(img, reset = true) {
   const W = Math.round(st.clientWidth * k), H = Math.round(st.clientHeight * k);
   if (!W || !H) return;
   cv.width = W; cv.height = H; // canvas matches stage so crosshair maps 1:1; cover-fit
-  const r = Math.max(W / img.width, H / img.height), w = img.width * r, h = img.height * r;
+  const iw = img.videoWidth || img.width, ih = img.videoHeight || img.height;
+  const r = Math.max(W / iw, H / ih), w = iw * r, h = ih * r;
   ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
   if (reset) fx = fy = .5;
   sample();
@@ -45,6 +46,8 @@ function sample() {
   rgb = [r / 25 | 0, g / 25 | 0, b / 25 | 0]; near = nearest(rgb);
   $('xh').style.left = fx * 100 + '%'; $('xh').style.top = fy * 100 + '%';
   const hx = toHex(rgb);
+  $('tsw').style.background = hx; $('tnm').textContent = near.name;
+  $('tag').style.transform = `translateX(${fx < .2 ? '-15%' : fx > .8 ? '-85%' : '-50%'})`;
   $('sw').style.background = hx; $('cap').textContent = 'UNDER CROSSHAIR · ' + hx;
   $('nm').innerHTML = `${near.name} <span>· ${near.nameTh}</span>`; $('pan').textContent = near.pantone;
   const i = P.indexOf(near);
@@ -56,12 +59,31 @@ function load(e) {
   const f = e.target.files[0]; if (!f) return;
   const u = URL.createObjectURL(f), img = new Image();
   // EXIF orientation is applied by browsers on decode (image-orientation: from-image default)
-  img.onload = () => { show('pick'); draw(img); URL.revokeObjectURL(u); };
+  img.onload = () => { stopCam(); show('pick'); draw(img); URL.revokeObjectURL(u); };
   img.onerror = () => alert("Couldn't read that image.");
   img.src = u; e.target.value = '';
 }
 $('fcam').onchange = $('fup').onchange = load;
-$('cam').onclick = () => $('fcam').click(); $('up').onclick = () => $('fup').click();
+// live camera: video frames are drawn to the canvas each tick, so sampling/crosshair code is unchanged
+let stream, vid, raf;
+function stopCam() { cancelAnimationFrame(raf); stream?.getTracks().forEach(t => t.stop()); stream = vid = null; $('fz').style.display = 'none'; }
+function tick() { if (vid.readyState >= 2) draw(vid, false); raf = requestAnimationFrame(tick); }
+async function startCam() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+  } catch { return $('fcam').click(); } // no HTTPS/permission/camera: fall back to native photo capture
+  vid = document.createElement('video'); vid.muted = vid.playsInline = true; vid.srcObject = stream;
+  await vid.play(); show('pick'); fx = fy = .5;
+  $('fz').textContent = 'Freeze'; $('fz').style.display = ''; tick();
+}
+$('fz').onclick = () => {
+  if (raf) { // freeze: snapshot current frame so palette/save work on a still
+    cancelAnimationFrame(raf); raf = 0;
+    const c = document.createElement('canvas'); c.width = vid.videoWidth; c.height = vid.videoHeight; c.getContext('2d').drawImage(vid, 0, 0);
+    draw(c, false); $('fz').textContent = 'Resume';
+  } else { $('fz').textContent = 'Freeze'; tick(); }
+};
+$('cam').onclick = startCam; $('up').onclick = () => $('fup').click();
 
 const st = $('stage'); let drag = false;
 const move = e => { const b = st.getBoundingClientRect(); fx = Math.min(1, Math.max(0, (e.clientX - b.left) / b.width)); fy = Math.min(1, Math.max(0, (e.clientY - b.top) / b.height)); sample(); };
@@ -94,5 +116,6 @@ function renderSaved() {
   });
 }
 $('goSaved').onclick = () => show('saved');
-$('back1').onclick = $('back2').onclick = () => show('home');
+$('back1').onclick = () => { stopCam(); show('home'); };
+$('back2').onclick = () => show('home');
 renderSaved();

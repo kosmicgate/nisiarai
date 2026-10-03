@@ -23,6 +23,8 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:20px}
 #xh i{position:absolute;background:#fff;box-shadow:0 0 0 1.5px #000}
 #xh .r{left:-18px;top:-18px;width:36px;height:36px;border:2px solid #fff;border-radius:50%;background:none;box-shadow:0 0 0 1.5px #000,inset 0 0 0 1.5px #000}
 #xh .h{left:-11px;top:-1px;width:22px;height:2px}#xh .v{left:-1px;top:-11px;width:2px;height:22px}
+#tag{position:absolute;top:26px;left:0;transform:translateX(-50%);display:flex;gap:6px;align-items:center;background:#000c;color:#fff;border-radius:999px;padding:4px 10px 4px 5px;white-space:nowrap;font-size:13px;font-weight:700;pointer-events:none}
+#tag b{width:18px;height:18px;border-radius:50%;border:2px solid #fff}
 .card{display:flex;gap:10px;align-items:center;border:2px solid var(--ink);border-radius:12px;padding:8px;flex:none}
 .sw{width:52px;height:52px;border-radius:8px;border:1px solid #0003;flex:none}
 .card .t{flex:1;min-width:0}.cap{font-size:12px;color:var(--dim)}
@@ -45,7 +47,7 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:20px}
 <section id="home" class="on">
  <h1>นี่สีอะไร</h1><p class="sub">Point at anything. Get its color name.</p>
  <div class="hero"></div>
- <button class="p" id="cam" style="height:64px">◉ &nbsp;Open camera</button>
+ <button class="p" id="cam" style="height:64px">◉ &nbsp;Live camera</button>
  <div class="cap" style="text-align:center">or</div>
  <button id="up" style="height:56px">⬆ &nbsp;Upload a photo</button>
  <button class="link" id="goSaved"></button>
@@ -54,9 +56,9 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:20px}
 </section>
 
 <section id="pick">
- <div class="top"><button id="back1" aria-label="Back">‹ Back</button><span class="cap">Drag + to sample</span></div>
+ <div class="top"><button id="back1" aria-label="Back">‹ Back</button><button id="fz" class="p" style="display:none;min-height:36px">Freeze</button><span class="cap">Drag + to sample</span></div>
  <div id="stage" role="img" aria-label="Photo. Drag the crosshair to sample a color."><canvas id="cv"></canvas>
-  <div id="xh"><i class="h"></i><i class="v"></i><i class="r"></i></div></div>
+  <div id="xh"><i class="h"></i><i class="v"></i><i class="r"></i><div id="tag"><b id="tsw"></b><span id="tnm"></span></div></div></div>
  <div class="card" aria-live="polite">
   <div class="sw" id="sw"></div>
   <div class="t"><div class="cap" id="cap"></div><div class="nm" id="nm"></div><div class="cap" id="pan"></div></div>
