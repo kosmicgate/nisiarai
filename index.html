@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>นี่สีอะไร · Color Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#222;--dim:#555;--bg:#ececea}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px "Noto Sans Thai",system-ui,sans-serif}
+main{max-width:480px;margin:0 auto;min-height:100dvh;background:#fff;padding:20px 18px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
+section{display:none;flex-direction:column;gap:12px;flex:1;min-height:0}section.on{display:flex}
+button{font:inherit;cursor:pointer;border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:12px;min-height:44px;padding:0 16px;font-weight:600}
+button.p{background:var(--ink);color:#fff;font-weight:700}
+button.link{border:0;background:none;text-decoration:underline;color:var(--dim)}
+h1{margin:0;font-size:26px}h2{margin:0;font-size:20px}
+.sub{color:var(--dim);margin:0}
+.hero{flex:1;min-height:140px;border-radius:16px;background:linear-gradient(90deg,#e3262b,#f28c1e,#f7e04b,#00a859,#1fb5b0,#1b7fc4,#5b2a8c,#e8486f)}
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--dim)}
+.top button{border:0;padding:0 8px 0 0;min-width:44px}
+#stage{position:relative;width:100%;aspect-ratio:1/1;max-height:42dvh;border:2px solid var(--ink);border-radius:12px;overflow:hidden;touch-action:none;cursor:crosshair;flex:none}
+#cv{width:100%;height:100%;display:block}
+#xh{position:absolute;width:0;height:0;pointer-events:none}
+#xh i{position:absolute;background:#fff;box-shadow:0 0 0 1.5px #000}
+#xh .r{left:-18px;top:-18px;width:36px;height:36px;border:2px solid #fff;border-radius:50%;background:none;box-shadow:0 0 0 1.5px #000,inset 0 0 0 1.5px #000}
+#xh .h{left:-11px;top:-1px;width:22px;height:2px}#xh .v{left:-1px;top:-11px;width:2px;height:22px}
+.card{display:flex;gap:10px;align-items:center;border:2px solid var(--ink);border-radius:12px;padding:8px;flex:none}
+.sw{width:52px;height:52px;border-radius:8px;border:1px solid #0003;flex:none}
+.card .t{flex:1;min-width:0}.cap{font-size:12px;color:var(--dim)}
+.nm{font-size:19px;font-weight:700;line-height:1.3}.nm span{font-weight:500;color:var(--dim)}
+#grid{flex:1;min-height:120px;overflow:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;align-content:start}
+.chip{border-radius:8px;overflow:hidden;border:1px solid #ddd;opacity:.7}
+.chip.on{border:3px solid #000;opacity:1}
+.chip div{height:26px}.chip p{margin:0;padding:3px 5px;font-size:12px;line-height:1.3}.chip small{color:var(--dim)}
+#sheet{display:none;position:fixed;inset:0;background:#0006;z-index:5;align-items:flex-end;justify-content:center}
+#sheet.on{display:flex}
+#sheet>div{width:100%;max-width:480px;background:#fff;border-radius:24px 24px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
+#sheet input{height:48px;border:2px solid var(--ink);border-radius:10px;padding:0 12px;font:inherit}
+.row{display:flex;gap:10px}.row button{flex:1;min-height:48px}
+#list{display:flex;flex-direction:column;gap:8px;overflow:auto}
+.it{display:flex;gap:12px;align-items:center;border:2px solid var(--ink);border-radius:12px;padding:8px}
+.it .t{flex:1}.it button{border:0;width:44px;font-size:18px;color:#888;padding:0}
+.empty{border:2px dashed #ccc;border-radius:12px;padding:30px;text-align:center;color:#777}
+</style></head><body><main>
+
+<section id="home" class="on">
+ <h1>นี่สีอะไร</h1><p class="sub">Point at anything. Get its color name.</p>
+ <div class="hero"></div>
+ <button class="p" id="cam" style="height:64px">◉ &nbsp;Open camera</button>
+ <div class="cap" style="text-align:center">or</div>
+ <button id="up" style="height:56px">⬆ &nbsp;Upload a photo</button>
+ <button class="link" id="goSaved"></button>
+ <input type="file" id="fcam" accept="image/*" capture="environment" hidden>
+ <input type="file" id="fup" accept="image/*" hidden>
+</section>
+
+<section id="pick">
+ <div class="top"><button id="back1" aria-label="Back">‹ Back</button><span class="cap">Drag + to sample</span></div>
+ <div id="stage" role="img" aria-label="Photo. Drag the crosshair to sample a color."><canvas id="cv"></canvas>
+  <div id="xh"><i class="h"></i><i class="v"></i><i class="r"></i></div></div>
+ <div class="card" aria-live="polite">
+  <div class="sw" id="sw"></div>
+  <div class="t"><div class="cap" id="cap"></div><div class="nm" id="nm"></div><div class="cap" id="pan"></div></div>
+  <button class="p" id="save">Save</button></div>
+ <div class="cap">PALETTE — nearest highlighted</div>
+ <div id="grid"></div>
+</section>
+
+<section id="saved">
+ <div class="top"><button id="back2" aria-label="Back">‹ Back</button></div>
+ <h2>Saved colors</h2><div id="list"></div>
+</section>
+
+<div id="sheet"><div>
+ <b style="font-size:18px">Name this color</b>
+ <div class="card" style="border:0;padding:0"><div class="sw" id="nsw" style="width:40px;height:40px"></div><div class="cap" id="ninfo"></div></div>
+ <input id="nin" placeholder="e.g. Dad's shirt" maxlength="40">
+ <div class="row"><button id="cancel">Cancel</button><button class="p" id="ok">Save</button></div>
+</div></div>
+</main>
+<script src="palette.js"></script>
+<script src="app.js"></script>
+</body></html>
