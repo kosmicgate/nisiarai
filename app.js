@@ -119,3 +119,29 @@ $('goSaved').onclick = () => show('saved');
 $('back1').onclick = () => { stopCam(); show('home'); };
 $('back2').onclick = () => show('home');
 renderSaved();
+
+// home demo: same sampling on the bundled photo, crosshair starts on the coral pool tile
+const hc = $('hc'), hctx = hc.getContext('2d', { willReadFrequently: true }), hs = $('hs'), himg = new Image();
+let hx = .2, hy = .74;
+function hdraw() {
+  const k = devicePixelRatio || 1, W = Math.round(hs.clientWidth * k), H = Math.round(hs.clientHeight * k);
+  if (!W || !H || !himg.complete || !himg.naturalWidth) return;
+  hc.width = W; hc.height = H;
+  const sh = himg.naturalWidth * H / W, sy = Math.min(himg.naturalHeight - sh, himg.naturalHeight * .39);
+  hctx.drawImage(himg, 0, sy, himg.naturalWidth, sh, 0, 0, W, H); hsample();
+}
+function hsample() {
+  const px = Math.round(hx * (hc.width - 1)), py = Math.round(hy * (hc.height - 1));
+  const d = hctx.getImageData(Math.max(0, Math.min(hc.width - 5, px - 2)), Math.max(0, Math.min(hc.height - 5, py - 2)), 5, 5).data; let r = 0, g = 0, b = 0;
+  for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; }
+  const n = nearest([r / 25 | 0, g / 25 | 0, b / 25 | 0]);
+  $('hx').style.left = hx * 100 + '%'; $('hx').style.top = hy * 100 + '%';
+  $('hsw').style.background = n.hex; $('hnm').textContent = `${n.name} · ${n.nameTh}`; $('hpan').textContent = n.pantone;
+}
+const hmove = e => { const b = hs.getBoundingClientRect(); hx = Math.min(1, Math.max(0, (e.clientX - b.left) / b.width)); hy = Math.min(1, Math.max(0, (e.clientY - b.top) / b.height)); hsample(); };
+let hdrag = false;
+hs.onpointerdown = e => { hs.setPointerCapture(e.pointerId); hdrag = true; hmove(e); };
+hs.onpointermove = e => hdrag && hmove(e);
+hs.onpointerup = hs.onpointercancel = () => hdrag = false;
+himg.onload = hdraw; himg.src = 'hero.jpg';
+new ResizeObserver(hdraw).observe(hs);

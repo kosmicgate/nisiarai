@@ -14,15 +14,17 @@ button.p{background:var(--ink);color:#fff;font-weight:700}
 button.link{border:0;background:none;text-decoration:underline;color:var(--dim)}
 h1{margin:0;font-size:26px}h2{margin:0;font-size:20px}
 .sub{color:var(--dim);margin:0}
-.hero{flex:1;min-height:140px;border-radius:16px;background:linear-gradient(90deg,#e3262b,#f28c1e,#f7e04b,#00a859,#1fb5b0,#1b7fc4,#5b2a8c,#e8486f)}
+.hs{width:100%;aspect-ratio:292/300;max-height:46dvh;margin:auto;border:2px solid var(--ink);border-radius:20px;overflow:hidden;touch-action:none;cursor:crosshair;position:relative;flex:none;background:#ccc}
+.hs canvas{width:100%;height:100%;display:block}
+#hcard{position:absolute;left:10px;right:10px;bottom:10px;background:#fff;border-radius:14px;padding:8px;display:flex;gap:10px;align-items:center;pointer-events:none}
 .top{display:flex;justify-content:space-between;align-items:center;color:var(--dim)}
 .top button{border:0;padding:0 8px 0 0;min-width:44px}
 #stage{position:relative;width:100%;aspect-ratio:1/1;max-height:42dvh;border:2px solid var(--ink);border-radius:12px;overflow:hidden;touch-action:none;cursor:crosshair;flex:none}
 #cv{width:100%;height:100%;display:block}
-#xh{position:absolute;width:0;height:0;pointer-events:none}
-#xh i{position:absolute;background:#fff;box-shadow:0 0 0 1.5px #000}
-#xh .r{left:-18px;top:-18px;width:36px;height:36px;border:2px solid #fff;border-radius:50%;background:none;box-shadow:0 0 0 1.5px #000,inset 0 0 0 1.5px #000}
-#xh .h{left:-11px;top:-1px;width:22px;height:2px}#xh .v{left:-1px;top:-11px;width:2px;height:22px}
+#xh,.xh{position:absolute;width:0;height:0;pointer-events:none}
+.xh i{position:absolute;background:#fff;box-shadow:0 0 0 1.5px #000}
+.xh .r{left:-18px;top:-18px;width:36px;height:36px;border:2px solid #fff;border-radius:50%;background:none;box-shadow:0 0 0 1.5px #000,inset 0 0 0 1.5px #000}
+.xh .h{left:-11px;top:-1px;width:22px;height:2px}.xh .v{left:-1px;top:-11px;width:2px;height:22px}
 #tag{position:absolute;top:26px;left:0;transform:translateX(-50%);display:flex;gap:6px;align-items:center;background:#000c;color:#fff;border-radius:999px;padding:4px 10px 4px 5px;white-space:nowrap;font-size:13px;font-weight:700;pointer-events:none}
 #tag b{width:18px;height:18px;border-radius:50%;border:2px solid #fff}
 .card{display:flex;gap:10px;align-items:center;border:2px solid var(--ink);border-radius:12px;padding:8px;flex:none}
@@ -46,7 +48,9 @@ h1{margin:0;font-size:26px}h2{margin:0;font-size:20px}
 
 <section id="home" class="on">
  <h1>นี่สีอะไร</h1><p class="sub">Point at anything. Get its color name.</p>
- <div class="hero"></div>
+ <div id="hs" class="stage hs" role="img" aria-label="Demo photo. Drag the crosshair to try the color finder."><canvas id="hc"></canvas>
+  <div class="xh" id="hx"><i class="h"></i><i class="v"></i><i class="r"></i></div>
+  <div id="hcard"><div class="sw" id="hsw" style="width:40px;height:40px"></div><div><div class="nm" id="hnm" style="font-size:15px;line-height:1.2"></div><div class="cap" id="hpan"></div></div></div></div>
  <button class="p" id="cam" style="height:64px">◉ &nbsp;Live camera</button>
  <div class="cap" style="text-align:center">or</div>
  <button id="up" style="height:56px">⬆ &nbsp;Upload a photo</button>
