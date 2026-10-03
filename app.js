@@ -122,12 +122,12 @@ renderSaved();
 
 // home demo: same sampling on the bundled photo, crosshair starts on the coral pool tile
 const hc = $('hc'), hctx = hc.getContext('2d', { willReadFrequently: true }), hs = $('hs'), himg = new Image();
-let hx = .5, hy = .72;
+let hx = .5, hy = .68;
 function hdraw() {
   const k = devicePixelRatio || 1, W = Math.round(hs.clientWidth * k), H = Math.round(hs.clientHeight * k);
   if (!W || !H || !himg.complete || !himg.naturalWidth) return;
   hc.width = W; hc.height = H;
-  const sh = himg.naturalWidth * H / W, sy = 0; // top-aligned: show the sky
+  const sh = himg.naturalWidth * H / W, sy = (himg.naturalHeight - sh) * .5; // halfway: some sky, sign stays clear of the card
   hctx.drawImage(himg, 0, sy, himg.naturalWidth, sh, 0, 0, W, H); hsample();
 }
 function hsample() {
