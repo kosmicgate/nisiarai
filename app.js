@@ -122,7 +122,7 @@ renderSaved();
 
 // home demo: same sampling on the bundled photo, crosshair starts on the coral pool tile
 const hc = $('hc'), hctx = hc.getContext('2d', { willReadFrequently: true }), hs = $('hs'), himg = new Image();
-let hx = .2, hy = .74;
+let hx = .62, hy = .7;
 function hdraw() {
   const k = devicePixelRatio || 1, W = Math.round(hs.clientWidth * k), H = Math.round(hs.clientHeight * k);
   if (!W || !H || !himg.complete || !himg.naturalWidth) return;
