@@ -50,7 +50,6 @@ function sample() {
   const i = P.indexOf(near);
   if (i !== last) {
     chips[last]?.classList.remove('on'); chips[i].classList.add('on'); last = i;
-    chips[i].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 }
 function load(e) {
